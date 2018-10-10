@@ -1,0 +1,47 @@
+								4.1
+===================================================================
+
+	4.1.1
+--------------
+
+				>>> X='qwerty'
+				>>> def func():
+				...     print(X)
+				...
+				>>> func()
+				qwerty
+
+# X jest zmienną globalną 
+
+	4.1.2
+--------------
+
+				>>> X='qwerty'
+				>>> def func():
+				...     X='abc'
+				...
+				>>> func()
+				>>> print(X)
+				qwerty
+
+# X='abc' - tworzenie zmiennej lokalnej
+
+
+	4.1.2
+--------------
+
+				>>> X='qwerty'
+				>>> def func():
+				...     global X
+				...     X="abc"
+				...
+				>>> func()
+				>>> print(X)
+				abc
+
+# 'global X' - deklarujemy X wewnątrz funkcji jaki globalny
+
+
+
+
+
