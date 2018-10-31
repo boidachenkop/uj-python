@@ -63,7 +63,7 @@ def cmp_frac(frac1, frac2):
 		return 1 if cmp1 > cmp2 else -1
 
 def frac2float(frac):
-	return frac[0]/frac[1]
+	return float(frac[0]/frac[1])
 
 import unittest
 
