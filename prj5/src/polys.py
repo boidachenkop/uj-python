@@ -40,7 +40,7 @@ def is_zero(poly):
 	return True
 
 def cmp_poly(poly1, poly2):
-	pass # how?
+	return True if poly1 == poly2 else False
 
 def eval_poly(poly, x0):
 	b0 = poly[-1]
@@ -101,6 +101,10 @@ class TestPolynominals(unittest.TestCase):
 	def test_eval_poly(self):
 		self.assertEqual(eval_poly(self.p1, 4), 4)
 		self.assertEqual(eval_poly(self.p3, 4), 57)
+
+	def test_cmp_poly(self):
+		self.assertEqual(cmp_poly(self.p1, self.p1), True)
+		self.assertEqual(cmp_poly(self.p1, self.p2), False)
 
 	def test_combine_poly(self):
 		self.assertEqual(combine_poly(self.p5, self.p6), self.res1)
