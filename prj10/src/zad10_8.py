@@ -2,10 +2,10 @@
 # @Author: Pavlo Boidachenko
 # @Date:   2018-12-09 13:47:17
 # @Last Modified by:   Pavlo Boidachenko
-# @Last Modified time: 2018-12-09 14:05:26
+# @Last Modified time: 2018-12-17 14:21:14
 
 import random
-
+from collections import deque
 
 class QueueEmpty(Exception):
 	def __init__(self, val):
@@ -17,18 +17,25 @@ class QueueEmpty(Exception):
 class RandomQueue:
 
 	def __init__(self): 
-		self.items = []
-		self.size = 0
+		self.items = deque();
+		self.size = 0;
 
 	def insert(self, item): 
-		self.items.append(item)
+		head_or_tail = random.randint(0, 1);
+		if head_or_tail == 1:
+			self.items.append(item); #O(1)
+		else:
+			self.items.appendleft(item); #O(1)
 		self.size+=1
 
 	def remove(self):    # zwraca losowy element
 		if not self.is_empty():
-			to_remove = random.randint(0, self.size)
+			head_or_tail = random.randint(0, 1);
 			self.size-=1
-			return self.items.pop(to_remove)
+			if head_or_tail == 1:
+				return self.items.pop() #O(1)
+			else:
+				return self.items.popleft() #O(1)
 		else:
 			raise QueueEmpty("RandomQueue is empty")
 
