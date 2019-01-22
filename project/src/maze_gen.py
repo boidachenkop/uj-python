@@ -2,7 +2,7 @@
 # @Author: Pavlo Boidachenko
 # @Date:   2018-12-23 15:18:12
 # @Last Modified by:   Pavlo Boidachenko
-# @Last Modified time: 2018-12-24 17:32:08
+# @Last Modified time: 2019-01-22 17:48:40
 
 from PIL import Image
 import numpy as np 
@@ -94,12 +94,12 @@ class Maze:
 		neighbours = []
 		if self.maze[row][col+1].getType() == 0:
 			neighbours.append(self.maze[row][col+1])
-		if self.maze[row][col-1].getType() == 0: 
-			neighbours.append(self.maze[row][col-1])
+			if self.maze[row][col-1].getType() == 0: 
+				neighbours.append(self.maze[row][col-1])
 		if self.maze[row+1][col].getType() == 0: 
 			neighbours.append(self.maze[row+1][col])
-		if self.maze[row-1][col].getType() == 0: 
-			neighbours.append(self.maze[row-1][col])
+			if self.maze[row-1][col].getType() == 0: 
+				neighbours.append(self.maze[row-1][col])
 		return neighbours
 
 	def genMaze(self):
@@ -134,12 +134,15 @@ class Maze:
 		self.frames[0].save(name,
                save_all=True,
                append_images=self.frames[1:],
-               duration=100,
+               duration=30,
                loop=0)
 
 if __name__ == '__main__':
-	m = Maze(63)
-	m.genMaze()
+	size = int(input("Give labirynth size: "))
+	if size%2 == 0: # if even make it odd
+		size+=1;
+	m = Maze(size)
 	m.saveMaze("output.png")
+	m.genMaze()
 	m.makeAnimation('anim.gif');
 

@@ -1,0 +1,213 @@
+\documentclass[12pt]{report}
+\newcommand{\mychapter}[2]{
+    \setcounter{chapter}{#1}
+    \setcounter{section}{0}
+    \chapter*{#2}
+    \addcontentsline{toc}{chapter}{#2}
+}
+\usepackage[a4paper]{geometry}
+\usepackage[myheadings]{fullpage}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx, wrapfig, subcaption, setspace, booktabs}
+\usepackage[T1]{fontenc}
+\usepackage[font=small, labelfont=bf]{caption}
+% \usepackage{fourier}
+\usepackage[protrusion=true, expansion=true]{microtype}
+\usepackage[english]{babel}
+\usepackage{sectsty}
+\usepackage{url, lipsum}
+% \usepackage{polski}
+\usepackage[utf8]{inputenc}
+\setlength\parindent{10pt}
+\usepackage{indentfirst}
+\usepackage{listings}%для листинга программ
+\usepackage{color}%для цвета
+\usepackage{caption}
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+\doublespacing
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+%настройки листингов
+\definecolor{mygray}{rgb}{0.7,0.7,0.7}%цвет коментариев
+\definecolor{myyellow}{rgb}{0.7,0.5,0}
+% \lstset{language=C++,
+% 		tabsize=2,
+% 		showstringspaces=false,
+%         breaklines=true, 
+%         keywordstyle=\color{blue}\ttfamily, 
+%         commentstyle=\color{mygray},
+%         stringstyle=\color{myyellow}\ttfamily,}
+\usepackage{pythonhighlight}
+
+%-------------------------------------------------------------------------------
+% HEADER & FOOTER
+%-------------------------------------------------------------------------------
+%что бы чаптеры не мешали нумерации секций
+\renewcommand{\thesection}{\arabic{section}}
+\pagestyle{fancy}
+\fancyhf{}
+\setlength\headheight{15pt}
+\fancyhead[L]{Pavlo Boidachenko}
+\fancyhead[R]{Uniwersytet Jagielloński}
+\fancyfoot[R]{\thepage}
+%-------------------------------------------------------------------------------
+% TITLE PAGE
+%-------------------------------------------------------------------------------
+
+\begin{document}
+\title{ \normalsize \textsc{}
+		\\ [2.0cm]
+		\HRule{0.5pt} \\
+		\LARGE \textbf{{Generowanie labiryntów metodą Kruskala}}
+		\HRule{2pt} \\ [0.5cm]
+		\normalsize \today \vspace*{5\baselineskip}}
+
+\date{}
+
+\author{
+		Pavlo Boidachenko \\ 
+		Uniwersytet Jagielloński \\ }
+
+\maketitle
+\newpage
+%сменил имя с contents на spis tresci
+\renewcommand{\contentsname}{Spis treści}
+\tableofcontents
+\newpage
+
+%-------------------------------------------------------------------------------
+% Section title formatting
+\sectionfont{\scshape}
+%-------------------------------------------------------------------------------
+%---------------------------------------------------
+%fetures
+%---------------------------------------------------
+%\begin{figure}[h]
+%	\begin{minipage}[h]{0.50\linewidth}
+%		\center{
+% 		}
+% 	\end{minipage}
+% 	\begin{minipage}[h]{0.40\linewidth}
+%     	\center{
+%     	}
+% 	\end{minipage}
+% \label{ris:image1}
+%\end{figure}
+
+% \begin{center}
+% \includegraphics[scale=0.9]{photo.png}
+% \end{center}
+%-------------------------------------------------------------------------------
+% BODY
+%-------------------------------------------------------------------------------
+\section{Opis algorytmu}
+\par Algorytm Kruskala jest algorytmem grafowym wyznaczającym minimalne
+drzewo rozpinające dla grafu nieskierowanego ważonego. Jak się okazuję 
+problem generowania labiryntu łatwo sprowadzić do problemu znanego: 
+wyznaczanie minimalnego drzewa rozpinającego. Generowanie labiryntu 
+zaczynamy od siatki w której białe komórki są przejściami, 
+a czarne ścianami.
+
+\begin{center}
+	\includegraphics[scale=0.6]{./pic/grid.png}
+	\\\textit{\footnotesize{ Rys 1. 
+			Początkowy stan.}}
+	\label{ris:image1}
+\end{center}
+
+\par Przedstawmy sobie że białe komórki reprezentują węzły grafu, a
+ czarne są krawędziami. Przy budowaniu minimalnego drzewa rozpinającego 
+za każdym razem jak wybieramy krawędź do naszego drzewa rozpinającego 
+usuwamy odpowiednią ścianę w labiryncie. W wyniku otrzymujemy 
+labirynt w którym komórki są spójne(z każdej komórki da się przejść 
+do każdej innej) i bez cykli.
+\par W praktyce generowanie labiryntu przebiega następująco:
+\begin{enumerate}
+\item Każdą komórkę wkładamy do swojego zbioru.
+\item Wybieramy losową ścianę, jeśli komórki które ona rozdziela są w
+różnych zbiorach, to złączamy zbiory i usuwamy ścianę.
+\item Powtórz krok 2 dopóki są nieodwiedzone ściany.
+\end{enumerate}
+
+\newpage
+
+\section{Implementacja}
+\subsection{Generowanie}
+\par Komórki i ściany zaimplementowałem w jednej strukturze danych 
+\textit{WallCell} która ma pole \textit{type} od wartości którego zależy
+czy \textit{WallCell} reprezentuje komórkę(wartość 0), czy ścianę
+(wartość 0). ID są przydzielane tylko komórkom, żeby można było ich
+odróżniać w zbiorach.
+
+\begin{python}
+class WallCell:
+	def __init__(self, type, ID=None):
+		self.id = ID
+		self.type = type
+		self.row = None
+		self.col = None
+
+\end{python}
+
+\par Jądrem implementacji jest metoda \textit{genMaze()}, która wybiera
+losową ścianę z listy ścian, szuka sąsiednie komórki dla tej ściany
+(może ich być maksymalnie dwie), sprawdza czy wybrane komórki są w
+różnych zbiorach i jeżeli są to usuwa ścianę pomiędzy nimi i złącza 
+zbiory.
+
+\begin{python}
+	def genMaze(self):
+		while(len(self.walls) != 0):
+			curr = random.choice(self.walls)
+			self.walls.remove(curr)
+			nb1, nb2 = self.getWallNeighbourCells(curr)
+			if self.inDiffSets(nb1, nb2):
+				curr.removeWall()
+				self.mergeCellSets(nb1, nb2)
+				self.frames.append(self.getImage())
+\end{python}
+
+\subsection{Wizualizacja}
+\par Dla wizualizacji wyników działania programu używam biblioteki PIL
+(Python Image Library) - biblioteka Pythona przeznaczona dla pracy z 
+grafiką rastrową. Oficjalna strona internetowa: 
+\url{http://www.pythonware.com/products/pil/}
+\par Biblioteka PIL pozwala na stworzenie animacji w postaci pliku .gif.
+Dla tego po każdym złączeniu komórek generuję obrazek i przechowuję go
+w liście. Dla przetwarzania macierzy labiryntu, przechowującej obiekty 
+klasy \textit{WallCell}, jest metoda \textit{getImage()}, która iteruję
+wierszami i kolumnami macierzy i zależnie od typu komórki jest 
+rysowany czarny lub biały piksel. Obrazek jest skalowany, żeby
+ ładnie się otwierał w programach dla przeglądania grafiki.
+ \newpage
+
+
+
+
+
+
+\begin{thebibliography}{9}
+
+\bibitem{url1}{Biblioteka PIL \url{http://www.pythonware.com/products/pil/}}
+\bibitem{url2}{Wikipedia: Maze generation algorithm \url{https://en.wikipedia.org/wiki/Maze_generation_algorithm}}
+\bibitem{url3}{Creating animated GIFs with Pillow \url{http://www.pythoninformer.com/python-libraries/pillow/creating-animated-gif/}}
+  
+
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
