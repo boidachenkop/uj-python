@@ -2,7 +2,7 @@
 # @Author: Pavlo Boidachenko
 # @Date:   2018-12-23 15:18:12
 # @Last Modified by:   Pavlo Boidachenko
-# @Last Modified time: 2019-01-22 17:48:40
+# @Last Modified time: 2019-01-22 21:05:27
 
 from PIL import Image
 import numpy as np 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 	if size%2 == 0: # if even make it odd
 		size+=1;
 	m = Maze(size)
-	m.saveMaze("output.png")
 	m.genMaze()
+	m.saveMaze("output.png")
 	m.makeAnimation('anim.gif');
 
